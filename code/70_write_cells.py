@@ -95,21 +95,24 @@ def sec(text):
     return p(text, size=10.5, bold=True, space_after=2)
 
 
+# 글머리는 2계층만 사용: 1계층 ○(항목), 2계층 -(세부). 들여쓰기·내어쓰기는 80_build_hwpx.py의 HANG에서 지정
 def item(tag, text):
     tagged = f"<b>({tag})</b> " if tag else ""
     return p(f"○ {tagged}{text}")
 
 
 def sub(text):
-    return p(f"- {text}", size=BODY - 0.5, indent=9)
+    return p(f"- {text}")
 
 
 def note(text):
-    return p(f"* {text}", size=TINY + 0.5, indent=9, align="left", color="#333333")
+    """표 아래 주석: 글머리 없이 '주:' 문단."""
+    return caption(f"주: {text}")
 
 
-def box(text):
-    return p("⇒ " + text, bold=True, space_after=4)
+def box(text, tag="시사점"):
+    """묶음의 결론: 1계층 ○ 항목으로 두고 굵게 강조."""
+    return p(f"○ <b>({tag}) {text}</b>", space_after=4)
 
 
 TABLE_WIDTHS = []
@@ -433,8 +436,8 @@ policy = save("policy", [
     sub("인구감소지역 92곳의 택시 공백 면에 동일 방식 적용 가능"),
     item("이동권·소득", "주민의 병원·장보기 이동 보장, 운전 주민의 실비·수고보상 확보"),
     item("안전", "비공식 운송의 보험·운행기록 기반 합법 운송 전환"),
-    box(f"차량 자원과 비용 우위 조건 확인, 일본은 등록제로 전체 시정촌의 {pct(A4['jp_munis_share_2026'])}까지 확산"),
-    box("시범사업 단계를 넘어 법 개정을 통한 본격 제도화 필요"),
+    box("차량 자원과 비용 우위 조건이 확인된 만큼 시범사업 단계를 넘어 법 개정을 통한 본격 제도화 필요", tag="결론"),
+    sub(f"일본은 등록제 도입 후 전체 시정촌의 {pct(A4['jp_munis_share_2026'])}까지 확산"),
 ])
 
 # ================================================================== 8. 분석도구 및 참고문헌
