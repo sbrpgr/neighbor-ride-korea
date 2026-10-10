@@ -1,0 +1,21 @@
+﻿id,value,unit,desc,file,pdf_page,needle,verified
+voc_dep_40,262.0,원/km,"승용차 감가상각비(40km/h, 2024년 기준)",cost_params/MOLIT_TransportFacilityInvestmentGuideline_8th_draft_2026-03-13.pdf,238,40 262.0 115.6 10.5 10.7 26.4 425.2,ok
+voc_fuel_40,115.6,원/km,"승용차 유류비(40km/h, 세금 제외)",cost_params/MOLIT_TransportFacilityInvestmentGuideline_8th_draft_2026-03-13.pdf,238,40 262.0 115.6,ok
+voc_oil_40,10.5,원/km,승용차 엔진오일비(40km/h),cost_params/MOLIT_TransportFacilityInvestmentGuideline_8th_draft_2026-03-13.pdf,238,115.6 10.5,ok
+voc_tire_40,10.7,원/km,승용차 타이어마모비(40km/h),cost_params/MOLIT_TransportFacilityInvestmentGuideline_8th_draft_2026-03-13.pdf,238,10.5 10.7,ok
+voc_maint_40,26.4,원/km,승용차 유지관리비(40km/h),cost_params/MOLIT_TransportFacilityInvestmentGuideline_8th_draft_2026-03-13.pdf,238,10.7 26.4,ok
+voc_total_40,425.2,원/km,승용차 차량운행비용 합계(40km/h),cost_params/MOLIT_TransportFacilityInvestmentGuideline_8th_draft_2026-03-13.pdf,238,26.4 425.2,ok
+voc_fuel_avg,101.5,원/km,승용차 유류비 원단위(평균),cost_params/MOLIT_TransportFacilityInvestmentGuideline_8th_draft_2026-03-13.pdf,235,10.3 101.5,ok
+car_fuel_eff,10.3,km/L,승용차 평균 연비,cost_params/MOLIT_TransportFacilityInvestmentGuideline_8th_draft_2026-03-13.pdf,235,승용 10.3,ok
+vot_car_nonwork,15205.0,원/인·시,승용차 비업무통행 시간가치(참고),cost_params/MOLIT_TransportFacilityInvestmentGuideline_8th_draft_2026-03-13.pdf,223,"15,205",ok
+min_wage_2026,10320.0,원/시간,2026년 적용 최저임금,cost_params/MOEL_MinimumWage2026_Notice2025-47.pdf,1,"10,320원",ok
+ins_onoff_10min,178.0,원/10분,"승용차 유상운송 단체(On-Off) 특약, 자기차량손해 포함",cost_params/FSS_press_2020-07-23_private_car_paid_cargo_rider_premium.pdf,3,10분당 178원,ok
+ins_personal_base,650000.0,원/년,개인용 자동차보험 평균(2019),cost_params/FSS_press_2020-07-23_private_car_paid_cargo_rider_premium.pdf,2,65만원 91만원,ok
+ins_personal_rider,910000.0,원/년,유상운송 상시보장 특약 가입 시 평균(2019),cost_params/FSS_press_2020-07-23_private_car_paid_cargo_rider_premium.pdf,3,65만원 → 특약 가입시 : 91만원,ok
+ins_no_small_car_rider,6.0,인승,6인승 이하 승용차는 유상운송특약 가입불가(화물 특약 도입 전),cost_params/FSS_press_2020-07-23_private_car_paid_cargo_rider_premium.pdf,2,6인승 이하 승용차는 유상운송특약에 가입불가,ok
+ins_daein1_cap,150000000.0,원,특약 미가입 유상운송 사고 시 대인Ⅰ(사망 1.5억 원 한도)만 보상,cost_params/FSS_press_2020-07-23_private_car_paid_cargo_rider_premium.pdf,2,대인Ⅰ(사망시 1.5억원 한도)만 보상,ok
+taxi_base_fare,5000.0,원,완주군 중형택시 기본요금(2km),taxi/wanju_taxi_fare_notice_2023-78_converted.pdf,1,"5,000원",ok
+taxi_base_km,2.0,km,기본거리,taxi/wanju_taxi_fare_notice_2023-78_converted.pdf,1,2km까지,ok
+taxi_unit_fare,163.0,원,거리운임 단위요금,taxi/wanju_taxi_fare_notice_2023-78_converted.pdf,1,163원,ok
+taxi_unit_m,134.0,m,거리운임 단위거리,taxi/wanju_taxi_fare_notice_2023-78_converted.pdf,1,134m당,ok
+taxi_outside_surcharge,0.2,비율,사업구역 밖 시계외 할증,taxi/wanju_taxi_fare_notice_2023-78_converted.pdf,1,사업구역외 20%,ok

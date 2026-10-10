@@ -1,0 +1,19 @@
+﻿id,value,desc,file,needles,verified
+jp_orgs_2026,865.0,"일본 교통공백지 자가용유상운송(公共ライドシェア) 단체 수, 2026.3 말",overseas/JP_MLIT_public_rideshare_leaflet_R8-03_002008895.pdf,"865|6,307|681",ok
+jp_vehicles_2026,6307.0,"같은 제도 차량 수, 2026.3 말",overseas/JP_MLIT_public_rideshare_leaflet_R8-03_002008895.pdf,"6,307",ok
+jp_munis_2026,681.0,"도입 시구정촌 수(전체 1,741곳 중), 2026.3 말",overseas/JP_MLIT_public_rideshare_leaflet_R8-03_002008895.pdf,"1,741|681",ok
+jp_orgs_2022,670.0,"같은 제도 단체 수, 2022.3 말",overseas/JP_MLIT_LastOneMileMobility_status_2022_001460981.pdf,670,ok
+jp_munis_2022,572.0,"도입 시구정촌 수, 2022.3 말",overseas/JP_MLIT_LastOneMileMobility_status_2022_001460981.pdf,572,ok
+jp_welfare_orgs_2025,2244.0,"일본 복지유상운송 단체 수, 2025.3 말",overseas/JP_MLIT_catalog_driver_shortage_3rd_2025-05_001892264.pdf,"2,244|12,188",ok
+jp_welfare_vehicles_2025,12188.0,"일본 복지유상운송 차량 수, 2025.3 말",overseas/JP_MLIT_catalog_driver_shortage_3rd_2025-05_001892264.pdf,"12,188",ok
+jp_rideshare_drivers_2025,9518.0,"일본판 라이드셰어 등록 운전자, 2025.8.17",overseas/JP_MLIT_rideshare_status_kanjikai5_2025-09-10_001909512.pdf,"9,518",ok
+jp_rideshare_trips_2025,958898.0,"일본판 라이드셰어 누적 운행 회수, 2025.8.17",overseas/JP_MLIT_rideshare_status_kanjikai5_2025-09-10_001909512.pdf,"958,898",ok
+jp_fare_80pct,0.8,요금 기준: 지역 택시요금의 약 8할,overseas/JP_Chugoku-TB_fare_rule_koji_R6-04-26_000234279.pdf,タクシー運賃の約８割,ok
+jp_fatal_2024,0.0,공공 라이드셰어 2024년도 사망사고 건수,overseas/JP_MLIT_public_rideshare_leaflet_R8-03_002008895.pdf,死亡事故：０件,ok
+jp_insurance_8000,80000000.0,"대인배상 1인당 8,000만 엔 이상",overseas/JP_MLIT_public_rideshare_leaflet_R8-03_002008895.pdf,"8,000万円",ok
+uk_amap_55p,0.55,영국 자원봉사 운전자 비과세 마일리지 55p/마일(2026/27),overseas/UK_HMRC_EIM71155_volunteer_drivers_tax_threshold.html,55 pence,ok
+uk_cta_share_car_scheme,0.41,영국 지역사회교통 운영기관 중 자원봉사 차량제 운영 비율,overseas/UK_CTA_Mapping_England_State_of_Sector_2024.pdf,41%,ok
+uk_bucks_drivers,835.0,버킹엄셔 자원봉사 운전자(추정),overseas/UK_HealthwatchBucks_HomeToHealth_volunteer_car_schemes_2017-05.pdf,835,ok
+uk_bucks_trips,12375.0,버킹엄셔 연 병원 이동(추정),overseas/UK_HealthwatchBucks_HomeToHealth_volunteer_car_schemes_2017-05.pdf,"12,375",ok
+us_charity_14c,0.14,미국 자선 마일리지 14센트/마일(법정),overseas/US_IRS_IR-2025-128_2026_mileage_rates.html,14 cents per mile,ok
+us_mn_nemt_share,0.3333333333333333,미네소타 비응급 의료이동 비용 중 자원봉사 운전자 상환 비중,overseas/US_MnDOT_MCOTA_2018_annual_report_2019-01.pdf,88 million,ok

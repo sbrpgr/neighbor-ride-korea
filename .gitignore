@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+report/build/
+00_분석및작업계획_2026-10-10.md
+template_analyze.json

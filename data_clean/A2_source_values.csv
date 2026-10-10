@@ -1,0 +1,36 @@
+﻿id,value,unit,desc,file,pdf_page,needle,verified
+gk_taxi_2024_exp,317592000.0,원,곡성 농촌형 교통모델(효도택시) 2024 지출액,budget/gokseong_2024_settlement.pdf,108,"317,592,000",ok
+gk_taxi_2024_trips,24959.0,회,곡성 효도택시 2024 운행횟수,budget/gokseong_2024_settlement.pdf,834,"24,959회",ok
+gk_taxi_2024_pax,32199.0,명,곡성 효도택시 2024 이용인원,budget/gokseong_2024_settlement.pdf,834,"32,199명",ok
+gk_taxi_target_villages,47.0,개,곡성 효도택시 대상 마을(2024),budget/gokseong_2024_settlement.pdf,686,"47개 마을(2,383명)",ok
+gk_taxi_target_residents,2383.0,명,곡성 효도택시 대상 주민(2024),budget/gokseong_2024_settlement.pdf,686,"2,383명",ok
+gk_taxi_fee_myeon,100.0,원/대,곡성 효도택시 본인부담: 마을회관-읍면 소재지,budget/gokseong_2024_settlement.pdf,686,100원 / 대당,ok
+gk_taxi_fee_zone,1200.0,원/대,곡성 효도택시 본인부담: 마을회관-생활권역 소재지,budget/gokseong_2024_settlement.pdf,686,"1,200원 / 대당",ok
+gk_taxi_fleet_total,50.0,대,곡성 관내 택시(면별 곡성읍24·오곡1·삼기0·석곡7·목사동1·죽곡0·고달0·옥과13·입2·겸1·오산1),gokseong/gokseong_hyodo_taxi_plan_20251126_excerpt.pdf,1,합계 50 24 1 - 7 1 - - 13 2 1 1,ok
+gk_taxi_2026_budget,450000000.0,원,곡성 효도택시 2026 총사업비,gokseong/gokseong_2026h1_council_report.html,1,4억 5000만 원,ok
+gk_taxi_2026h1_pax,17148.0,명,곡성 효도택시 2026 상반기 이용,gokseong/gokseong_2026h1_council_report.html,1,1만 7148명,ok
+gk_taxi_2026h1_exp,199000000.0,원,곡성 효도택시 2026 상반기 운행지원금 집행,gokseong/gokseong_2026h1_council_report.html,1,1억 9900만 원,ok
+gk_bus_subsidy,332000000.0,원,곡성 버스 재정지원금 2024,budget/gokseong_2024_settlement.pdf,686,332백만 원,ok
+gk_bus_remote_loss,1426000000.0,원,곡성 벽지·비수익 노선 손실보상 2024(49개 노선),budget/gokseong_2024_settlement.pdf,686,"49개 노선 / 1,426백만 원",ok
+gk_bus_flatfare_loss,341000000.0,원,곡성 농어촌버스 단일요금제 손실보상 2024,budget/gokseong_2024_settlement.pdf,686,341백만 원,ok
+gk_bus_routes,49.0,개,곡성 벽지·비수익 노선 수 2024,budget/gokseong_2024_settlement.pdf,686,49개 노선,ok
+wj_taxi_2024_exp,177317000.0,원,완주 농촌형 택시(행복콜택시-으뜸택시) 2024 결산,budget/wanju_2024_settlement_performance.pdf,385,,image
+wj_taxi_2024_pax,28069.0,명,완주 행복콜택시 2024 이용자수,budget/wanju_2024_settlement_performance.pdf,383,,image
+wj_callbus_2024_pax,89298.0,명,완주 행복콜버스 2024 이용자수,budget/wanju_2024_settlement_performance.pdf,383,,image
+wj_callbus_2024_opex,881725000.0,원,완주 행복콜버스 운영비 지원 2024 최종예산,budget/wanju_2024_supp4_road_transport.pdf,4,"881,725",ok
+wj_callbus_2024_vehicle,78875000.0,원,완주 행복콜버스 차량 구입 2024 최종예산,budget/wanju_2024_supp4_road_transport.pdf,4,"78,875",ok
+wj_callbus_2026_opex,954600000.0,원,완주 행복콜버스 운영비 지원 2026 본예산,budget/wanju_2026_budget_road_transport.pdf,6,"954,600",ok
+wj_callbus_2025_fleet,10.0,대,완주 행복콜버스 운행대수(농식품부 우수사례),drt/mafra_rural_transport_20260211.pdf,4,10대,ok
+drt_guide_daily_cost,558380.0,원/대·일,국토부 DRT 가이드라인 이천 11인승 18시간 운송원가,drt/molit_drt_guideline_20251230.pdf,26,"558,380",ok
+drt_guide_driver,337671.0,원/대·일,같은 원가 중 운전직 인건비,drt/molit_drt_guideline_20251230.pdf,26,"337,671",ok
+drt_guide_platform,48000.0,원/대·일,같은 원가 중 플랫폼 운영비,drt/molit_drt_guideline_20251230.pdf,26,"48,000",ok
+drt_guide_depreciation,24140.0,원/대·일,같은 원가 중 차량감가상각비,drt/molit_drt_guideline_20251230.pdf,26,"24,140",ok
+drt_guide_insurance,18000.0,원/대·일,같은 원가 중 보험료,drt/molit_drt_guideline_20251230.pdf,26,"18,000",ok
+mafra_2025_public,53200000000.0,원,농촌형 교통모델 2025 지원액(국비 50%),drt/mafra_rural_transport_20260211.pdf,3,532억원,ok
+mafra_2025_users,7407000.0,명,농촌형 교통모델 2025 이용자 수,drt/mafra_rural_transport_20260211.pdf,1,"7,407",ok
+mafra_2025_counties,81.0,개,농촌형 교통모델 2025 시행 군,drt/mafra_rural_transport_20260211.pdf,1,81개 군,ok
+mafra_2025_villages,9540.0,개,농촌형 교통모델 2025 지원 마을,drt/mafra_rural_transport_20260211.pdf,1,"9,540개 마을",ok
+mafra_2026_budget,57982000000.0,원,농촌형 교통모델 2026 사업예산(국비 50%),drt/mafra_rural_transport_20260211.pdf,3,"57,982백만원",ok
+krei_2019_taxi_nat,2707.1,원/인(국비),KREI 2019 택시형 이용인원당 국비,drt/krei_rural_transport_2021.pdf,42,"2,707.1",ok
+krei_2019_bus_nat,13810.1,원/인(국비),KREI 2019 버스형 이용인원당 국비,drt/krei_rural_transport_2021.pdf,42,"13,810.1",ok
+krei_2019_bus_vehicle_share,0.569,비율,KREI 2019 버스형 투입비용 중 차량구입 관련 비중,drt/krei_rural_transport_2021.pdf,42,56.9%,ok

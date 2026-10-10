@@ -1,0 +1,7 @@
+pandas>=2.2
+numpy>=1.26
+openpyxl>=3.1
+matplotlib>=3.9
+pdfplumber>=0.11
+PyMuPDF>=1.24
+# 조판(선택, Windows + 한컴오피스): pyhwpx>=1.7

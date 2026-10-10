@@ -1,0 +1,30 @@
+{
+  "values": {
+    "jp_orgs_2026": 865.0,
+    "jp_vehicles_2026": 6307.0,
+    "jp_munis_2026": 681.0,
+    "jp_orgs_2022": 670.0,
+    "jp_munis_2022": 572.0,
+    "jp_welfare_orgs_2025": 2244.0,
+    "jp_welfare_vehicles_2025": 12188.0,
+    "jp_rideshare_drivers_2025": 9518.0,
+    "jp_rideshare_trips_2025": 958898.0,
+    "jp_fare_80pct": 0.8,
+    "jp_fatal_2024": 0.0,
+    "jp_insurance_8000": 80000000.0,
+    "uk_amap_55p": 0.55,
+    "uk_cta_share_car_scheme": 0.41,
+    "uk_bucks_drivers": 835.0,
+    "uk_bucks_trips": 12375.0,
+    "us_charity_14c": 0.14,
+    "us_mn_nemt_share": 0.3333333333333333
+  },
+  "n_checks": 18,
+  "n_ok": 18,
+  "license_60_74": 7548904,
+  "license_total": 34707289,
+  "license_60_74_share": 0.21750197775458635,
+  "jp_orgs_growth_2022_2026": 0.29104477611940305,
+  "jp_munis_share_2026": 0.39115450890292935,
+  "jp_munis_share_2022": 0.32854681217690984
+}

@@ -1,0 +1,6 @@
+data_raw/** -text
+data_clean/** -text
+report/** -text
+figures/** -text
+*.py text eol=lf
+*.md text eol=lf
