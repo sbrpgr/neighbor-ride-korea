@@ -37,8 +37,8 @@ def plain_snippets():
         f'<p style="font-family:\'{FONT}\'; font-size:10pt;">{plain["subtitle"]}</p></body></html>', encoding="utf-8")
 
 
-# 글머리 2계층의 왼쪽 여백·내어쓰기(pt): 제목(□·①) 0, ○ 항목, - 세부 순으로 들여쓰고 둘째 줄은 기호 뒤 글자에 맞춘다.
-HANG = {"○": (9.5, -12), "- ": (26, -7)}
+# 글머리 구조(○ 소제목 + - 내용 3~5개)의 왼쪽 여백·내어쓰기(pt): - 는 소제목 글자 시작점에 맞추고 둘째 줄은 기호 뒤 글자에 맞춘다.
+HANG = {"○": (0, -12.5), "- ": (12.5, -7)}
 
 
 def hang_paragraphs(hwp):

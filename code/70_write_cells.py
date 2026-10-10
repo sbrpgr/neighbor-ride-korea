@@ -73,46 +73,38 @@ TINY = 7
 FONT = "나눔바른고딕"
 
 
-def p(text, size=BODY, bold=False, indent=0, align="justify", space_after=1.5, color=None):
-    style = f"font-family:'{FONT}'; font-size:{size}pt; margin:0 0 {space_after}pt {indent}pt; text-align:{align};"
+def p(text, size=BODY, bold=False, indent=0, align="justify", space_after=1.5, color=None, space_before=0):
+    style = (f"font-family:'{FONT}'; font-size:{size}pt; margin:{space_before}pt 0 {space_after}pt {indent}pt; "
+             f"text-align:{align};")
     if color:
         style += f" color:{color};"
     inner = f"<b>{text}</b>" if bold else text
     return f'<p style="{style}">{inner}</p>'
 
 
-def lead(text):
-    """리드문: '~하고자 함.' 한 문장."""
-    return p(text, size=BODY, space_after=3, color="#1f3a5f")
-
-
-def head(text):
-    return p(f"□ {text}", size=10, bold=True, space_after=1.5)
-
-
-def sec(text):
-    """결과 칸의 대단원 제목(①~⑤)."""
-    return p(text, size=10.5, bold=True, space_after=2)
-
-
-# 글머리는 2계층만 사용: 1계층 ○(항목), 2계층 -(세부). 들여쓰기·내어쓰기는 80_build_hwpx.py의 HANG에서 지정
-def item(tag, text):
-    tagged = f"<b>({tag})</b> " if tag else ""
-    return p(f"○ {tagged}{text}")
-
-
-def sub(text):
-    return p(f"- {text}")
+# 글머리 구조: ○ 소제목(짧은 명사구) 아래 같은 깊이의 - 내용 3~5개. 다른 기호·번호는 쓰지 않는다.
+# 들여쓰기·내어쓰기는 80_build_hwpx.py의 HANG에서 지정한다.
+def block(title, bullets):
+    """○ 소제목 + - 내용 3~5개. 내용은 문자열 또는 (라벨, 문장) 또는 ('!', 문장: 굵은 시사점)."""
+    if not 3 <= len(bullets) <= 5:
+        raise ValueError(f"'{title}': 내용 {len(bullets)}개(3~5개여야 함)")
+    out = [p(f"○ {title}", size=10, bold=True, space_after=1, space_before=3)]
+    for b in bullets:
+        if isinstance(b, tuple) and b[0] == "!":
+            text = f"<b>{b[1]}</b>"
+        elif isinstance(b, tuple):
+            text = f"<b>{b[0]}</b>: {b[1]}"
+        else:
+            text = b
+        if re.match(r"^(<b>)?[0-9①-⑩]", text):
+            raise ValueError(f"'{title}': 내용 줄이 번호·숫자로 시작함 → {text[:20]}")
+        out.append(p(f"- {text}"))
+    return out
 
 
 def note(text):
     """표 아래 주석: 글머리 없이 '주:' 문단."""
     return caption(f"주: {text}")
-
-
-def box(text, tag="시사점"):
-    """묶음의 결론: 1계층 ○ 항목으로 두고 굵게 강조."""
-    return p(f"○ <b>({tag}) {text}</b>", space_after=4)
 
 
 TABLE_WIDTHS = []
@@ -193,24 +185,25 @@ plain = {
 
 # ================================================================== 2. 분석 배경 및 목적
 bg = save("background", [
-    lead("교통취약지역에 이미 있는 주민 차량을 이웃의 병원·생활 이동에 활용하는 등록제 기반 자가용 유상운송 제도의 "
-         "자원 규모와 비용효율을 공식 통계로 검증하여, 제도 도입의 정량적 근거를 마련하고자 함."),
-    head("현 황"),
-    item("고령화", f"인구감소지역 {int(DEP['n_sigungu'])}곳 인구 {n(DEP['pop'] / 1e4)}만 명 중 65세 이상 "
-                 f"{pct(DEP['agg_pop65_share'])}"),
-    item("의료 접근 격차", f"병·의원 평균 접근시간 대중교통 {DEP['min_clinic_pt_median']:.0f}분, 승용차 "
-                      f"{DEP['min_clinic_car_median']:.0f}분(시군구 중앙값)"),
-    sub(f"종합병원은 대중교통 {DEP['min_hosp_pt_median']:.0f}분, {int(DEP['n_sigungu'])}곳 중 {n_cens}곳은 2시간 내 도달 불가"),
-    head("기존 정책과 법제도의 한계"),
-    item("공급 방식의 제약", f"농촌형 교통모델 2025년 {eok(S2['mafra_2025_public'], 0)}(국비 50%) 투입, "
-                       f"{int(S2['mafra_2025_counties'])}개 군 {n(S2['mafra_2025_villages'])}개 마을 운영"),
-    sub("택시형은 택시가 있는 지역에서만 작동, 버스형·수요응답형은 차량과 전담 운전기사 신규 확보 필요"),
-    item("법적 제약", "「여객자동차 운수사업법」 제81조는 운행 경비 수령도 자가용 유상운송으로 보아 금지"),
-    sub("예외는 평일 출퇴근 카풀과 재난 등 허가 사유에 한정, 이웃 간 실비 운송은 위법"),
-    head("분석 목적"),
-    item("", "2025년 입법·정책 제안대회 제안 「등록제 기반 자가용 유상운송 허용 제도」의 핵심 가설 검증"),
-    sub("① 교통취약지역 내 활용 가능한 주민 차량 자원의 존재"),
-    sub("② 운송 건별 실비·수고보상 방식의 기존 대안 대비 비용효율"),
+    *block("현황", [
+        f"인구감소지역 {int(DEP['n_sigungu'])}곳 인구 {n(DEP['pop'] / 1e4)}만 명 중 65세 이상 {pct(DEP['agg_pop65_share'])}"
+        f"(전국 {pct(NAT['agg_pop65_share'])})",
+        f"병·의원 평균 접근시간 대중교통 {DEP['min_clinic_pt_median']:.0f}분, 승용차 {DEP['min_clinic_car_median']:.0f}분"
+        "(시군구 중앙값)",
+        f"종합병원은 대중교통 {DEP['min_hosp_pt_median']:.0f}분, {int(DEP['n_sigungu'])}곳 중 {n_cens}곳은 2시간 내 도달 불가",
+    ]),
+    *block("기존 정책과 법제도의 한계", [
+        f"농촌형 교통모델 2025년 {eok(S2['mafra_2025_public'], 0)}(국비 50%) 투입, {int(S2['mafra_2025_counties'])}개 군 "
+        f"{n(S2['mafra_2025_villages'])}개 마을 운영",
+        "택시형은 택시가 있는 지역에서만 작동, 버스형·수요응답형은 차량·전담 운전기사 신규 확보 필요",
+        "「여객자동차 운수사업법」 제81조는 운행 경비 수령도 자가용 유상운송으로 보아 금지",
+        "예외는 평일 출퇴근 카풀과 재난 등 허가 사유에 한정, 이웃 간 실비 운송은 위법",
+    ]),
+    *block("분석 목적", [
+        "입법·정책 제안대회(2025) 제안 「등록제 기반 자가용 유상운송 허용 제도」의 핵심 가설을 공식 통계로 검증",
+        ("차량 자원 가설", "교통취약지역 내 활용 가능한 주민 차량 자원 존재"),
+        ("비용효율 가설", "운송 건별 실비·수고보상 방식의 기존 대안 대비 공공지출 절감"),
+    ]),
 ])
 
 # ================================================================== 3. 활용 데이터
@@ -244,39 +237,53 @@ DATA_ROWS = [
     ("여객자동차 운수사업법 제81조 - 법제", "법제처", "국가법령정보센터", "law.go.kr/법령/여객자동차운수사업법/제81조"),
 ]
 data_cell = save("data", [
-    p(f"○ 공식 통계·결산서·법령 등 원자료 {len(MAN)}건을 기관 누리집에서 직접 수집, 출처 URL·해시값과 함께 코드 저장소에 공개"
-      "(MANIFEST.csv). 핵심 자료와 선정 이유는 아래와 같음", size=8.5),
+    *block("데이터 구성", [
+        f"공식 통계·결산서·예산서·법령 등 원자료 {len(MAN)}건을 기관 누리집에서 직접 수집",
+        "전 자료의 출처 URL·기준시점·SHA-256 해시를 코드 저장소 MANIFEST.csv로 공개",
+        "핵심 자료와 선정 이유는 아래 표와 같음",
+    ]),
     table(["활용 데이터(명) - 선정 이유", "제공기관(명)", "플랫폼(명)", "URL"], DATA_ROWS, [35, 12, 13, 40],
           size=TINY, sizes=[TINY, TINY, TINY, 6.3]),
 ])
 
 # ================================================================== 4. 분석과정 및 방법
 method = save("method", [
-    item("수집·정제", f"원자료 {len(MAN)}건을 SHA-256 해시와 함께 보관, 결산서·지침·해외 문서 인용 수치 {n_needles}건은 "
-                   f"원문 쪽의 동일 문자열을 스크립트로 자동 대조(이미지 쪽 {n_image}건은 판독)"),
-    item("차량 자원", f"국토부 시군구 자동차 등록과 주민등록 세대·인구를 {int(NAT['n_sigungu'])}개 시군구로 결합, "
-                   "인구감소지역·관심지역·기타 지역 비교"),
-    sub(f"행정구역 개편 후 옛 명칭 잔여 등록 {n(residual_cars)}대 제외, KTDB 병·의원·종합병원 접근지표 결합"),
-    item("기존 대안 비용", "결산·예산 집행액을 이용 실적으로 나눠 1건당 공공지출 산출, 수요응답형 버스(DRT)는 차량 1대 연 운영비로 환산"),
-    item("주민차량 비용모형", "1회 비용 = 차량실비(유류·엔진오일·타이어·유지관리) + 수고보상(최저임금 × 소요시간) "
-                         "+ 운행보험 + 안전·등록비 + 정산비"),
-    sub("기존 보유 차량이므로 감가상각 제외(민감도 분석에서 포함)"),
-    sub(f"효도택시 운행당 지출을 택시 운임식에 대입해 평균 편도거리 {A3['d_base_km']:.1f}km 역산, 6개 변수 "
-        f"{A3['sens_n']}개 조합 민감도 분석"),
-    sub("생활권 수요별 손익분기 산출 후 곡성군 적용"),
-    item("코드·데이터", f"{GITHUB} (Python 3.11, run_all.py로 전 과정 재현)"),
+    *block("자료 수집·정제", [
+        f"원자료 {len(MAN)}건을 SHA-256 해시와 함께 보관",
+        f"결산서·지침·해외 문서 인용 수치 {n_needles}건은 원문 쪽의 동일 문자열을 스크립트로 자동 대조"
+        f"(이미지 쪽 {n_image}건은 판독)",
+        f"일반구는 시로 합산, 행정구역 개편 후 옛 명칭 잔여 등록 {n(residual_cars)}대 제외",
+    ]),
+    *block("분석 절차", [
+        ("차량 자원", f"자동차 등록·주민등록 세대·인구·KTDB 접근지표를 {int(NAT['n_sigungu'])}개 시군구로 결합해 "
+                    "인구감소지역·관심지역·기타 지역 비교"),
+        ("기존 대안 비용", "결산·예산 집행액을 이용 실적으로 나눠 1건당 공공지출 산출, DRT는 차량 1대 연 운영비로 환산"),
+        ("주민차량 비용", "차량실비(감가상각 제외) + 수고보상(최저임금 × 소요시간) + 운행보험 + 안전·등록비 + 정산비"),
+        ("민감도·손익분기", f"평균 편도 {A3['d_base_km']:.1f}km 역산, 6개 변수 {A3['sens_n']}개 조합, 생활권 수요별 "
+                       "손익분기 산출 후 곡성군 적용"),
+    ]),
+    *block("재현성", [
+        ("코드·데이터", GITHUB),
+        "Python 3.11 기반, run_all.py 한 번으로 원자료부터 그림·원고까지 재현",
+        "결과 파일 해시는 2회 실행 시 동일, 인용 수치의 원문 대조 실패 0건",
+    ]),
 ])
+
 
 # ================================================================== 5. AI 기술 활용
 ai = save("ai", [
-    item("사용 서비스", "Anthropic Claude Code(Claude Opus 5.5 모델), 한컴오피스 자동화(pyhwpx)"),
-    item("활용 범위", "공공데이터 수집 스크립트, 시군구 명칭 정규화·결합, 결산서 수치 원문 대조, 비용모형·민감도·그림 코드, "
-                   "양식 조판"),
-    sub("해외 1차 자료와 국내 비용 원단위 조사는 하위 에이전트 2개가 병렬 수행, 출처·쪽 번호 기록"),
-    item("검증 원칙", "AI가 제시한 수치는 미사용, 모든 수치를 원자료에서 스크립트로 재계산하고 원문과 대조"),
-    item("주요 프롬프트", "\"자동차등록과 주민등록 세대를 시군구로 결합해 인구감소지역의 인구당 자가용을 계산하라\", "
-                       "\"결산서 쪽 번호와 금액을 원문에서 찾아 대조하고 못 찾으면 멈춰라\", \"주민차량 1회 비용을 항목별로 나누고 "
-                       "택시형·DRT와의 손익분기를 구하라\""),
+    *block("사용 서비스와 활용 범위", [
+        "Anthropic Claude Code(Claude Opus 5.5 모델), 한컴오피스 자동화(pyhwpx)",
+        "공공데이터 수집 스크립트, 시군구 명칭 정규화·결합, 결산서 수치 원문 대조 코드 작성",
+        "비용모형·민감도·그림 코드 작성과 공모전 양식 조판 자동화",
+        "해외 1차 자료·국내 비용 원단위 조사는 하위 에이전트 2개가 병렬 수행, 출처·쪽 번호 기록",
+    ]),
+    *block("검증 원칙과 주요 프롬프트", [
+        "AI 제시 수치는 미사용, 모든 수치를 원자료에서 스크립트로 재계산하고 원문과 대조",
+        "\"자동차등록과 주민등록 세대를 시군구로 결합해 인구감소지역의 인구당 자가용을 계산하라\"",
+        "\"결산서 쪽 번호와 금액을 원문에서 찾아 대조하고 못 찾으면 멈춰라\"",
+        "\"주민차량 1회 비용을 항목별로 나누고 택시형·DRT와의 손익분기를 구하라\"",
+    ]),
 ])
 
 # ================================================================== 6. 분석 내용 및 결과
@@ -316,100 +323,103 @@ t3_rows = [(r["국가"], f"{r['제도']}<br>{r['운영 주체']}", r["운전자 
            for _, r in a4t.iterrows()]
 
 results = save("results", [
-    sec("① 교통취약지역의 주민 차량 자원"),
-    item("차량 규모", f"인구감소지역 {int(DEP['n_sigungu'])}곳 자가용 승용차 {n(DEP['car_private'] / 1e4, 1)}만 대, "
-                   f"승합·화물 포함 자가용 {n(DEP['total_private'] / 1e4, 1)}만 대(2026. 8.)"),
-    item("인구 대비 보유", f"인구 1천 명당 자가용 승용차 {n(DEP['agg_car_per_1000'])}대로 전국 {n(NAT['agg_car_per_1000'])}대, "
-                       f"그 외 지역 {n(OTH['agg_car_per_1000'])}대 상회"),
-    sub(f"세대당 자가용(전 차종) {DEP['agg_private_all_per_hh']:.2f}대로 전국 {NAT['agg_private_all_per_hh']:.2f}대 상회"),
-    sub(f"세대당 승용차({DEP['agg_car_per_hh']:.2f}대)만 전국({NAT['agg_car_per_hh']:.2f}대)보다 낮음, 1인 고령 세대 비중이 "
-        "높은 데 따른 결과"),
-    item("곡성군", f"개인 소유 차량 {n(GK['county_vehicles_2024'])}대, 차주 {n(GK['county_owners_2024'])}명(2024년 말), "
-                 f"10개 면 지역에도 {n(emd_myeon_vehicles)}대(2021년 말)"),
-    item("대중교통 접근 격차", f"종합병원 대중교통 30분 내 도달 인구 비율 중앙값 {DEP['r30_hosp_pt_median']:.0f}%"
-                          f"(승용차 {DEP['r30_hosp_car_median']:.0f}%)"),
-    sub(f"곡성 죽곡면은 대중교통 2시간 내 병·의원 도달 불가, 승용차 {EMD.loc['죽곡면', 'min_clinic_car']:.0f}분, 면 내 차량 "
-        f"{n(EMD.loc['죽곡면', 'private_vehicles_2021'])}대"),
+    *block("교통취약지역의 주민 차량 자원", [
+        f"인구감소지역 {int(DEP['n_sigungu'])}곳 자가용 승용차 {n(DEP['car_private'] / 1e4, 1)}만 대, 승합·화물 포함 자가용 "
+        f"{n(DEP['total_private'] / 1e4, 1)}만 대(2026. 8.)",
+        f"인구 1천 명당 자가용 승용차 {n(DEP['agg_car_per_1000'])}대로 전국 {n(NAT['agg_car_per_1000'])}대, 그 외 지역 "
+        f"{n(OTH['agg_car_per_1000'])}대 상회, 세대당 자가용(전 차종)도 {DEP['agg_private_all_per_hh']:.2f}대로 전국 "
+        f"{NAT['agg_private_all_per_hh']:.2f}대 상회",
+        f"곡성군 개인 소유 차량 {n(GK['county_vehicles_2024'])}대·차주 {n(GK['county_owners_2024'])}명(2024년 말), 10개 면 "
+        f"지역에도 {n(emd_myeon_vehicles)}대(2021년 말)",
+        f"반면 종합병원 대중교통 30분 내 도달 인구 비율은 중앙값 {DEP['r30_hosp_pt_median']:.0f}%(승용차 "
+        f"{DEP['r30_hosp_car_median']:.0f}%), 곡성 죽곡면은 대중교통 2시간 내 병·의원 도달 불가(승용차 "
+        f"{EMD.loc['죽곡면', 'min_clinic_car']:.0f}분)",
+        ("!", "차량 부족이 아닌 기존 차량과 이동 수요의 연결 부재가 교통취약지역 이동 문제의 핵심"),
+    ]),
     figure("fig1_vehicle_assets.png", 450),
     caption("그림 1. (가) 시군구별 병·의원 대중교통 접근시간과 인구 1천 명당 자가용 승용차, (나) 곡성군 읍면별 병·의원 접근시간"
             "과 개인소유 차량. 자료: 국토교통부·행정안전부(2026. 8.), 한국교통연구원 KTDB(2025), 곡성군 청년통계(2022). 오곡면은 "
-            "승용차 시간이 대중교통보다 긴 이상값으로 제외"),
-    box("차량 부족이 아닌, 기존 차량과 이동 수요의 연결 부재가 교통취약지역 이동 문제의 핵심"),
+            "승용차 시간이 대중교통보다 긴 이상값으로 제외. 세대당 승용차(0.77대)는 1인 고령 세대 비중의 영향으로 전국(0.84대) 하회"),
 
-    sec("② 기존 교통복지 대안의 비용구조"),
+    *block("기존 교통복지 대안의 비용구조", [
+        f"택시형은 차량 투자 없이 이용자 1명당 {won_range(A2['wanju_taxi_per_pax'], A2['gokseong_taxi_per_pax'])}, 단 "
+        "택시가 있는 지역에서만 작동",
+        f"곡성 등록 택시 {int(S2['gk_taxi_fleet_total'])}대 중 {eup_okgwa}대가 곡성읍·옥과면에 집중, 삼기·죽곡·고달면 0대, "
+        "오곡·목사동·겸·오산면 1대",
+        f"수요응답형 버스(DRT)는 차량·전담 운전기사 신규 확보 필요, 완주 행복콜버스 대당 연 "
+        f"{man(A2['wanju_callbus_opex_per_vehicle_2026'])}",
+        f"국토부 가이드라인 원가 하루 {won(S2['drt_guide_daily_cost'])} 중 {pct(A2['drt_guide_driver_share'])}가 운전기사 인건비",
+        ("!", "택시 부족 저수요 지역의 신규 공급 비용은 수요와 무관하게 고정"),
+    ]),
     title("표 1. 기존 대안의 공공지출과 이용 1건당 비용"),
     table(["유형", "사례(기준)", "공공지출", "이용 실적", "1건당 공공지출"], t1_rows, [11, 33, 17, 17, 22], size=TINY + 0.5,
           align=["center", "left", "right", "right", "right"]),
     caption("자료: 곡성군·완주군 결산서·예산서, 용인시 공공데이터, 농림축산식품부(2026. 2.). DRT·노선버스는 차량과 전담 운전기사 필요"),
-    item("택시형", f"차량 투자 없이 이용자 1명당 {won_range(A2['wanju_taxi_per_pax'], A2['gokseong_taxi_per_pax'])}, 단 택시가 "
-                 "있는 지역에서만 작동"),
-    sub(f"곡성 등록 택시 {int(S2['gk_taxi_fleet_total'])}대 중 {eup_okgwa}대가 곡성읍·옥과면에 집중, 삼기·죽곡·고달면 0대, "
-        "오곡·목사동·겸·오산면 1대"),
-    item("수요응답형 버스", f"차량·전담 운전기사 신규 확보 필요, 완주 행복콜버스 대당 연 "
-                       f"{man(A2['wanju_callbus_opex_per_vehicle_2026'])}"),
-    sub(f"국토부 가이드라인 원가 하루 {won(S2['drt_guide_daily_cost'])} 중 {pct(A2['drt_guide_driver_share'])}가 운전기사 인건비"),
-    box("택시 부족 저수요 지역의 신규 공급 비용은 수요와 무관하게 고정"),
 
-    sec("③ 주민차량 운송의 비용과 절감 효과"),
-    item("평균 운행거리", f"효도택시 운행당 평균 지출 {won(gk_trip)}과 본인부담 100원을 완주군 택시 운임 고시(기본 2km "
-                       f"{n(S3['taxi_base_fare'])}원, {int(S3['taxi_unit_m'])}m당 {int(S3['taxi_unit_fare'])}원)에 대입, "
-                       f"평균 편도 {A3['d_base_km']:.1f}km 산출"),
+    *block("주민차량 1회 운행 비용", [
+        f"효도택시 운행당 평균 지출 {won(gk_trip)}과 본인부담 100원을 완주군 택시 운임 고시(기본 2km "
+        f"{n(S3['taxi_base_fare'])}원, {int(S3['taxi_unit_m'])}m당 {int(S3['taxi_unit_fare'])}원)에 대입해 평균 편도 "
+        f"{A3['d_base_km']:.1f}km 산출",
+        f"차량실비는 투자평가지침 차량운행비용 중 감가상각을 제외하고 휘발유 2026년 평균가 반영"
+        f"({base['v_per_km']:.0f}원/km)",
+        f"수고보상은 최저임금 {n(S3['min_wage_2026'])}원에 소요시간을 곱해 산정, 보험은 금감원 단체특약 요율의 2배 적용",
+        f"공공지출은 1회당 빈차 귀가 {won(base['public'])}, 동행 왕복 {won(rt['public'])}(표 2)",
+    ]),
     title(f"표 2. 주민차량 1회 운행 비용(편도 {A3['d_base_km']:.1f}km, 2026년 가격)"),
     table(["항목", "빈차 귀가", "동행 왕복", "근거"], t2_rows, [22, 19, 19, 40], size=TINY + 0.5,
           align=["left", "right", "right", "left"]),
-    note("빈차 귀가: 승객 하차 후 운전자 단독 귀가(보수적 가정). 동행 왕복: 용무 종료까지 대기 후 함께 귀가(귀가 운행은 "
-         "별도 1회, 대기시간 보상 없음). 감가상각은 기존 보유 차량이므로 제외"),
-    item("택시형 대비", f"빈차 귀가 시 택시와 대등({pct(A3['saving_vs_taxi_empty'])} 절감), 동행 왕복 시 "
-                     f"{pct(A3['saving_vs_taxi_round'])} 절감"),
-    sub(f"1~25km 전 구간에서 빈차 귀가는 택시 운임 대비 {-gap_e.min() * 100:.0f}% 높음~{gap_e.max() * 100:.0f}% 낮음, "
-        f"동행 왕복은 {gap_r.min() * 100:.0f}~{gap_r.max() * 100:.0f}% 낮음"),
-    sub(f"감가상각 포함 또는 수고보상 1.5배 시 빈차 귀가는 {best_oat_empty * 100:.0f}~{worst_oat_empty * 100:.0f}% 상승, "
-        f"동행 왕복은 {worst_oat_round * 100:.0f}% 이상 절감 유지"),
-    sub(f"{A3['sens_n']}개 조합 중 동행 왕복의 {pct(A3['sens_share_le_taxi_round'])}가 효도택시 단가 이하"),
-    item("신규 공급 대비", f"곡성 면 평균 수요(연 {n(A3['myeon_trips'])}회)에 DRT 1대(연 {eok(A3['drt_fixed_per_vehicle'], 2)}) "
-                       f"투입 시 이용자 1명당 {won(drt_low_pax)}, 주민차량은 "
-                       f"{won_range(rt['public'] / pax, base['public'] / pax)}"),
-    sub(f"생활권 수요 연 {n(A3['q_star_drt_trips'])}회(동행 왕복 {n(A3['q_star_drt_trips_round'])}회) 미만이면 주민차량이 유리"),
+    note("빈차 귀가는 승객 하차 후 운전자 단독 귀가(보수적 가정), 동행 왕복은 용무 종료까지 대기 후 함께 귀가(귀가 운행은 별도 "
+         "1회, 대기시간 보상 없음). 감가상각은 기존 보유 차량이므로 제외"),
+
+    *block("기존 대안 대비 절감 효과", [
+        f"택시형 대비 빈차 귀가 {pct(A3['saving_vs_taxi_empty'])}, 동행 왕복 {pct(A3['saving_vs_taxi_round'])} 절감",
+        f"거리 1~25km 전 구간에서 빈차 귀가는 택시 운임 대비 {-gap_e.min() * 100:.0f}% 높음~{gap_e.max() * 100:.0f}% 낮음, "
+        f"동행 왕복은 {gap_r.min() * 100:.0f}~{gap_r.max() * 100:.0f}% 낮음",
+        f"감가상각 포함·수고보상 1.5배 조건에서도 동행 왕복은 {worst_oat_round * 100:.0f}% 이상 절감, {A3['sens_n']}개 조합 중 "
+        f"{pct(A3['sens_share_le_taxi_round'])}가 효도택시 단가 이하",
+        f"곡성 면 평균 수요(연 {n(A3['myeon_trips'])}회)에 DRT 1대(연 {eok(A3['drt_fixed_per_vehicle'], 2)}) 투입 시 이용자 "
+        f"1명당 {won(drt_low_pax)}, 주민차량은 {won_range(rt['public'] / pax, base['public'] / pax)}",
+        f"생활권 수요 연 {n(A3['q_star_drt_trips'])}회(동행 왕복 {n(A3['q_star_drt_trips_round'])}회) 미만이면 주민차량이 "
+        "DRT 신규 투입보다 유리",
+    ]),
     figure("fig2_costs.png", 450),
     caption(f"그림 2. (가) 이용자 1명당 공공지출(주민차량은 1회 공공지출 ÷ 효도택시 운행당 탑승 {pax:.2f}명), (나) 생활권 연간 "
             "수요별 연간 공공지출. DRT는 완주 행복콜버스 대당 운영비(2026)와 차량 4,000만 원 7년 연할, 대당 연 이용 실적(2024) 기준"),
-    item("곡성 적용", f"등록 택시 1대 이하 7개 면(면 지역 인구의 {pct(A3['share_low_taxi_myeon_pop'])})에 DRT 1대씩 투입 시 "
-                   f"연 {eok(LOW7['alt_cost'], 2)}"),
-    sub(f"같은 운행(연 {n(LOW7['trips'])}회)을 주민차량이 맡으면 {eok_range(LOW7['res_cost_round'], LOW7['res_cost_empty'], 2)}, "
-        f"연 {eok_range(LOW7['saving_empty'], LOW7['saving_round'])}({prange(LOW7['saving_pct_empty'], LOW7['saving_pct_round'])}) 절감"),
-    sub(f"절감액은 곡성군 2026년 효도택시 총사업비({eok(S2['gk_taxi_2026_budget'])}) 상회"),
-    box(f"택시 운영 지역에서는 택시형과 대등 이상, 택시 공백 지역에서는 공공지출 {pct(LOW7['saving_pct_empty'])} 이상 절감"),
 
-    sec("④ 해외 운영 사례와 국내 운영 자원"),
+    *block("곡성군 적용 결과", [
+        f"등록 택시 1대 이하 7개 면(면 지역 인구의 {pct(A3['share_low_taxi_myeon_pop'])})에 DRT 1대씩 투입 시 연 "
+        f"{eok(LOW7['alt_cost'], 2)}",
+        f"같은 운행(연 {n(LOW7['trips'])}회)을 주민차량이 맡으면 {eok_range(LOW7['res_cost_round'], LOW7['res_cost_empty'], 2)}",
+        f"연 {eok_range(LOW7['saving_empty'], LOW7['saving_round'])}({prange(LOW7['saving_pct_empty'], LOW7['saving_pct_round'])}) "
+        f"절감, 곡성군 2026년 효도택시 총사업비({eok(S2['gk_taxi_2026_budget'])}) 상회",
+        ("!", f"택시 운영 지역에서는 택시형과 대등 이상, 택시 공백 지역에서는 공공지출 {pct(LOW7['saving_pct_empty'])} 이상 절감"),
+    ]),
+
+    *block("해외 운영 사례와 국내 운영 자원", [
+        ("일본", "시정촌·NPO 등록제로 주민 자가용 유상운송 허용, 요금 기준을 택시요금의 약 50%에서 80%로 상향(2023. 12.)"),
+        ("일본 실적", f"운영 단체 {int(S4['jp_orgs_2022'])}개(2022. 3.)에서 {int(S4['jp_orgs_2026'])}개(2026. 3.)로 "
+                    f"{pct(A4['jp_orgs_growth_2022_2026'])} 증가, 전체 시정촌의 {pct(A4['jp_munis_share_2026'])} 운영, "
+                    f"2024년도 사망사고 {int(S4['jp_fatal_2024'])}건"),
+        ("영국", f"운행비 이하 사전 약정 요금은 영업에서 제외, 지역사회교통 기관의 {pct(S4['uk_cta_share_car_scheme'])}가 "
+               f"자원봉사 차량제 운영, 비과세 실비 마일당 {int(round(S4['uk_amap_55p'] * 100))}펜스(2026/27)"),
+        ("국내", f"곡성 개인 차주의 1%({drivers_1pct}명)가 월 10회 운행 시 연 {n(trips_1pct)}회로 효도택시 연간 운행의 "
+               f"{pct(trips_1pct / S2['gk_taxi_2024_trips'])}, 전국 60~74세 운전면허 소지자 {n(LIC / 1e4)}만 명"),
+        ("!", "등록·보험·요금 상한을 갖춘 주민 자가용 운송은 해외에서 검증된 제도, 국내 운영 자원도 충분"),
+    ]),
     title("표 3. 해외 주민 자가용 유상·실비 운송 제도"),
     table(["국가", "제도·운영 주체", "보상·요금", "규모(기준)"], t3_rows, [8, 40, 26, 26], size=TINY,
           align=["center", "left", "left", "left"]),
     caption("자료: 일본 국토교통성(2022~2026), 영국 HMRC·DfT·CTA(2024~2026), 미국 IRS·미네소타 교통부(2018~2025)"),
-    item("일본", "시정촌·NPO 등록제로 주민 자가용 유상운송 허용, 2023. 12. 요금 기준을 택시요금의 약 50%에서 80%로 상향"),
-    sub(f"운영 단체 {int(S4['jp_orgs_2022'])}개(2022. 3.)에서 {int(S4['jp_orgs_2026'])}개(2026. 3.)로 "
-        f"{pct(A4['jp_orgs_growth_2022_2026'])} 증가, 전체 시정촌의 {pct(A4['jp_munis_share_2026'])} 운영"),
-    sub(f"2024년도 공공 라이드셰어 사망사고 {int(S4['jp_fatal_2024'])}건"),
-    item("영국", "운행비 이하 사전 약정 요금은 영업에서 제외되어 허가 없이 자원봉사 차량제 운영"),
-    sub(f"2026/27년 비과세 실비 기준 마일당 45펜스에서 {int(round(S4['uk_amap_55p'] * 100))}펜스로 인상"),
-    item("국내 자원", f"곡성 개인 차주 {n(GK['county_owners_2024'])}명 중 1%({drivers_1pct}명)가 월 10회 운행 시 연 "
-                   f"{n(trips_1pct)}회, 효도택시 연간 운행의 {pct(trips_1pct / S2['gk_taxi_2024_trips'])}"),
-    sub(f"전국 60~74세 운전면허 소지자 {n(LIC / 1e4)}만 명(2024년 말)"),
-    box("등록·보험·요금 상한을 갖춘 주민 자가용 운송은 해외에서 검증된 제도, 국내 운영 자원도 충분"),
 
-    sec("⑤ 이용 주민·운전 주민·지자체의 편익"),
-    item("이용 주민", f"병·의원 접근시간 대중교통 {DEP['min_clinic_pt_median']:.0f}분에서 승용차 "
-                   f"{DEP['min_clinic_car_median']:.0f}분 수준으로 단축(인구감소지역 중앙값, 호출 대기 제외)"),
-    item("운전 주민", f"1회 수고보상 {won(base['effort'])}(빈차 귀가 {base['minutes']:.0f}분, 최저임금)과 차량실비 "
-                   f"{won(base['vehicle'])} 수령"),
-    sub(f"수고보상은 월 10회 {man(A3['driver_month_10'], 1)}, 원제안 상한 월 30회 {man(A3['driver_month_30'], 1)} 수준, "
-        "상근 고용이 아닌 여유 시간 부수입"),
-    item("지자체", "차량 구입비·운전기사 인건비 불필요"),
-    sub(f"농촌형 교통모델 군당 국비 지원기준 3.5억 원으로 연 {n(A3['budget_350m_trips_empty'] / 1e4, 1)}만~"
-        f"{n(A3['budget_350m_trips_round'] / 1e4, 1)}만 회 운행 가능"),
-    sub(f"곡성 효도택시 연간 운행({n(S2['gk_taxi_2024_trips'] / 1e4, 1)}만 회)을 상회하는 규모"),
-    item("안전망", "6인승 이하 승용차 유상운송 특약은 2020년 화물용만 도입, 비공식 여객 운송 사고 시 대인Ⅰ(사망 1.5억 원 "
-                 "한도)만 보상"),
-    sub("등록제를 통해 보험·신원확인·운행기록 체계로 편입 가능"),
+    *block("이용 주민·운전 주민·지자체의 편익", [
+        ("이용 주민", f"병·의원 접근시간 대중교통 {DEP['min_clinic_pt_median']:.0f}분에서 승용차 "
+                    f"{DEP['min_clinic_car_median']:.0f}분 수준으로 단축(인구감소지역 중앙값, 호출 대기 제외)"),
+        ("운전 주민", f"1회 수고보상 {won(base['effort'])}과 차량실비 {won(base['vehicle'])}, 수고보상은 월 10회 "
+                    f"{man(A3['driver_month_10'], 1)}·월 30회 {man(A3['driver_month_30'], 1)} 수준의 여유 시간 부수입"),
+        ("지자체", f"차량 구입비·운전기사 인건비 불필요, 군당 국비 지원기준 3.5억 원으로 연 "
+                 f"{n(A3['budget_350m_trips_empty'] / 1e4, 1)}만~{n(A3['budget_350m_trips_round'] / 1e4, 1)}만 회 운행 가능"),
+        ("안전망", "6인승 이하 승용차 유상운송 특약은 화물용만 존재(2020), 등록제로 비공식 여객 운송을 보험·운행기록 체계에 편입"),
+    ]),
 ])
 
 # ================================================================== 7. 정책제안 및 기대효과
@@ -423,21 +433,30 @@ t4_rows = [
     ("조례·운영", "효도택시 등 택시형 지원 조례", "등록·정산 근거 마련, 기존 콜센터의 택시·주민차량 통합 배차"),
 ]
 policy = save("policy", [
-    head("입법: 「여객자동차 운수사업법」 제81조 ‘등록 주민 운송’ 예외 신설"),
+    *block("입법: 「여객자동차 운수사업법」 제81조 ‘등록 주민 운송’ 예외 신설", [
+        "제81조 제1항 제3호 신설로 인구감소지역 등에서 시장·군수에게 등록한 주민의 실비 범위 보상 운송 허용",
+        "시행규칙에 등록 요건·보상 기준·월 30회 상한 규정",
+        "승용차 여객 유상운송 단체특약 도입, 지자체 일괄 가입·보험료 지원",
+    ]),
     table(["구분", "현행", "개정 방향"], t4_rows, [16, 32, 52], size=TINY + 0.5, align=["center", "left", "left"]),
-    head("적용 우선순위: 분석에서 확인된 비용 우위 조건 기준"),
-    item("1순위", f"등록 택시 1대 이하 또는 DRT 신규 투입이 필요한 면(생활권 연 수요 약 "
-               f"{n(round(A3['q_star_drt_trips'], -3))}회 이하), DRT 대비 {prange(M1['saving_pct_empty'], LOW7['saving_pct_round'])} 절감"),
-    item("2순위", f"택시형 운영 지역의 병원 대기·동행 왕복형 이동 보완, 택시형 대비 최대 {pct(A3['saving_vs_taxi_round'])} 절감"),
-    sub("택시가 충분한 읍 지역의 단거리 편도는 택시형 유지"),
-    head("기대효과"),
-    item("재정", f"곡성군 택시 1대 이하 7개 면 기준 DRT 대안 대비 연 {eok_range(LOW7['saving_empty'], LOW7['saving_round'])} "
+    *block("적용 우선순위", [
+        ("최우선", f"등록 택시 1대 이하 또는 DRT 신규 투입이 필요한 면(생활권 연 수요 약 "
+                 f"{n(round(A3['q_star_drt_trips'], -3))}회 이하), DRT 대비 {prange(M1['saving_pct_empty'], LOW7['saving_pct_round'])} 절감"),
+        ("차순위", f"택시형 운영 지역의 병원 대기·동행 왕복형 이동 보완, 택시형 대비 최대 {pct(A3['saving_vs_taxi_round'])} 절감"),
+        ("유지", "택시가 충분한 읍 지역의 단거리 편도는 택시형 유지"),
+    ]),
+    *block("기대효과", [
+        ("재정", f"곡성군 택시 1대 이하 7개 면 기준 DRT 대안 대비 연 {eok_range(LOW7['saving_empty'], LOW7['saving_round'])} "
                "절감, 차량 구입비 0원"),
-    sub("인구감소지역 92곳의 택시 공백 면에 동일 방식 적용 가능"),
-    item("이동권·소득", "주민의 병원·장보기 이동 보장, 운전 주민의 실비·수고보상 확보"),
-    item("안전", "비공식 운송의 보험·운행기록 기반 합법 운송 전환"),
-    box("차량 자원과 비용 우위 조건이 확인된 만큼 시범사업 단계를 넘어 법 개정을 통한 본격 제도화 필요", tag="결론"),
-    sub(f"일본은 등록제 도입 후 전체 시정촌의 {pct(A4['jp_munis_share_2026'])}까지 확산"),
+        ("확산", "인구감소지역 92곳의 택시 공백 면에 동일 방식 적용 가능"),
+        ("이동권·소득", "주민의 병원·장보기 이동 보장, 운전 주민의 실비·수고보상 확보"),
+        ("안전", "비공식 운송의 보험·운행기록 기반 합법 운송 전환"),
+    ]),
+    *block("결론", [
+        "교통취약지역의 주민 차량 자원 존재와 비용 우위 조건 확인",
+        f"일본은 등록제 도입 후 전체 시정촌의 {pct(A4['jp_munis_share_2026'])}까지 확산",
+        ("!", "시범사업 단계를 넘어 법 개정을 통한 본격 제도화 필요"),
+    ]),
 ])
 
 # ================================================================== 8. 분석도구 및 참고문헌

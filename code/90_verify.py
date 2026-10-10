@@ -71,6 +71,28 @@ def main():
     if narrative:
         fails.append(f"서술형 종결 {narrative[:3]}")
 
+    # 4-3) 글머리 피라미드: 모든 ○ 소제목 아래 - 내용 3~5개, - 는 번호·숫자로 시작하지 않음, 다른 글머리 기호 없음
+    struct_bad, cur, kids = [], None, 0
+    for ln in text.splitlines() + ["○ END"]:
+        t = ln.strip()
+        if t.startswith("○") or t.startswith("##"):
+            if cur and not 3 <= kids <= 5:
+                struct_bad.append(f"{cur[:20]}({kids}개)")
+            cur, kids = (t if t.startswith("○") else None), 0
+        elif t.startswith("- ") and cur is not None:
+            kids += 1
+            if re.match(r"^- [0-9①-⑩]", t):
+                struct_bad.append(f"번호 시작: {t[:20]}")
+        elif cur is not None and kids:
+            if not 3 <= kids <= 5:
+                struct_bad.append(f"{cur[:20]}({kids}개)")
+            cur = None
+    other = [t for t in (l.strip() for l in text.splitlines()) if t and t[0] in "□⇒*①②③④⑤"]
+    n_topics = sum(1 for l in text.splitlines() if l.strip().startswith("○ ") and l.strip() != "○ END")
+    lines.append(f"- 글머리 구조: 소제목 {n_topics}개, 내용 3~5개 위반 {len(struct_bad)}건, 기타 기호 {len(other)}건")
+    if struct_bad or other:
+        fails.append(f"글머리 구조 위반 {struct_bad[:3]} {other[:3]}")
+
     # 5) PDF 필수 항목·분량·그림
     pdf = REPORT / "김대운_분석보고서.pdf"
     if pdf.exists():
