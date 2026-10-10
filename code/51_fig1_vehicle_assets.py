@@ -62,7 +62,7 @@ def main():
     ax2.set_xticks([0, 30, 60, 90, 120])
     ax2.grid(axis="y", visible=False)
     ax2.set_xlabel("병·의원까지 평균 접근시간(분)")
-    ax2.set_title("(나) 곡성군 읍면", loc="left")
+    ax2.set_title("(나) 곡성군 읍면(오곡면 제외)", loc="left")
     ax2.legend(loc="upper center", bbox_to_anchor=(0.4, -0.2), ncol=2, handlelength=1.0)
 
     fig.tight_layout(w_pad=1.2)
