@@ -34,7 +34,8 @@ def plain_snippets():
         head + f'<p style="font-family:\'{FONT}\'; font-size:11pt;">{plain["name"]}</p></body></html>', encoding="utf-8")
     (CELLS / "title.html").write_text(
         head + f'<p style="font-family:\'{FONT}\'; font-size:12.5pt;"><b>{plain["title"]}</b></p>'
-        f'<p style="font-family:\'{FONT}\'; font-size:10pt;">{plain["subtitle"]}</p></body></html>', encoding="utf-8")
+        + (f'<p style="font-family:\'{FONT}\'; font-size:10pt;">{plain["subtitle"]}</p>' if plain["subtitle"] else "")
+        + '</body></html>', encoding="utf-8")
 
 
 # 글머리 구조(○ 소제목 + - 내용 3~5개)의 왼쪽 여백·내어쓰기(pt): - 는 소제목 글자 시작점에 맞추고 둘째 줄은 기호 뒤 글자에 맞춘다.

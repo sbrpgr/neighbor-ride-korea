@@ -72,11 +72,13 @@ def main():
         fails.append(f"서술형 종결 {narrative[:3]}")
 
     # 4-3) 글머리 피라미드: 모든 ○ 소제목 아래 - 내용 3~5개, - 는 번호·숫자로 시작하지 않음, 다른 글머리 기호 없음
+    # 사용자 확정본(2026-10-11)에서 내용 개수 하한을 직접 낮춘 소제목: 위반이 아닌 예외로 기록
+    USER_MIN = {"○ 검증 원칙과 주요 프롬프트": 2}
     struct_bad, cur, kids = [], None, 0
     for ln in text.splitlines() + ["○ END"]:
         t = ln.strip()
         if t.startswith("○") or t.startswith("##"):
-            if cur and not 3 <= kids <= 5:
+            if cur and not USER_MIN.get(cur, 3) <= kids <= 5:
                 struct_bad.append(f"{cur[:20]}({kids}개)")
             cur, kids = (t if t.startswith("○") else None), 0
         elif t.startswith("- ") and cur is not None:
@@ -84,12 +86,13 @@ def main():
             if re.match(r"^- [0-9①-⑩]", t):
                 struct_bad.append(f"번호 시작: {t[:20]}")
         elif cur is not None and kids:
-            if not 3 <= kids <= 5:
+            if not USER_MIN.get(cur, 3) <= kids <= 5:
                 struct_bad.append(f"{cur[:20]}({kids}개)")
             cur = None
     other = [t for t in (l.strip() for l in text.splitlines()) if t and t[0] in "□⇒*①②③④⑤"]
     n_topics = sum(1 for l in text.splitlines() if l.strip().startswith("○ ") and l.strip() != "○ END")
-    lines.append(f"- 글머리 구조: 소제목 {n_topics}개, 내용 3~5개 위반 {len(struct_bad)}건, 기타 기호 {len(other)}건")
+    lines.append(f"- 글머리 구조: 소제목 {n_topics}개, 내용 3~5개 위반 {len(struct_bad)}건, 기타 기호 {len(other)}건"
+                 f" (사용자 확정 예외: {', '.join(f'{k[2:]} {v}개 허용' for k, v in USER_MIN.items())})")
     if struct_bad or other:
         fails.append(f"글머리 구조 위반 {struct_bad[:3]} {other[:3]}")
 

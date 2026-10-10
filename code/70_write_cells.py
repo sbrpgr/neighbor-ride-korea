@@ -84,10 +84,10 @@ def p(text, size=BODY, bold=False, indent=0, align="justify", space_after=1.5, c
 
 # 글머리 구조: ○ 소제목(짧은 명사구) 아래 같은 깊이의 - 내용 3~5개. 다른 기호·번호는 쓰지 않는다.
 # 들여쓰기·내어쓰기는 80_build_hwpx.py의 HANG에서 지정한다.
-def block(title, bullets):
-    """○ 소제목 + - 내용 3~5개. 내용은 문자열 또는 (라벨, 문장) 또는 ('!', 문장: 굵은 시사점)."""
-    if not 3 <= len(bullets) <= 5:
-        raise ValueError(f"'{title}': 내용 {len(bullets)}개(3~5개여야 함)")
+def block(title, bullets, lo=3):
+    """○ 소제목 + - 내용 3~5개(lo로 하한 조정). 내용은 문자열 또는 (라벨, 문장) 또는 ('!', 문장: 굵은 시사점)."""
+    if not lo <= len(bullets) <= 5:
+        raise ValueError(f"'{title}': 내용 {len(bullets)}개({lo}~5개여야 함)")
     out = [p(f"○ {title}", size=10, bold=True, space_after=1, space_before=3)]
     for b in bullets:
         if isinstance(b, tuple) and b[0] == "!":
@@ -187,9 +187,8 @@ worst_oat_round = min(OAT["수고보상 1.5배"]["vs_taxi_round"], OAT["감가�
 # ================================================================== 1. 이름/주제
 plain = {
     "name": "김대운",
-    "title": "교통취약지역 주민 보유 차량의 이동 지원 자원화",
-    "subtitle": "등록제 기반 자가용 유상운송의 자원 규모와 비용효율 분석"
-                f"(전국 {int(NAT['n_sigungu'])}개 시군구 통계·전남 곡성군 적용)",
+    "title": "교통취약지역 주민 보유 차량의 이동 지원 자원 활용 가능성과 비용 효율 분석",
+    "subtitle": "",
 }
 (OUT / "plain.json").write_text(json.dumps(plain, ensure_ascii=False, indent=1), encoding="utf-8")
 
@@ -206,11 +205,12 @@ bg = save("background", [
         f"농촌형 교통모델 2025년 {eok(S2['mafra_2025_public'], 0)}(국비 50%) 투입, {int(S2['mafra_2025_counties'])}개 군 "
         f"{n(S2['mafra_2025_villages'])}개 마을 운영",
         "택시형은 택시가 있는 지역에서만 작동, 버스형·수요응답형은 차량·전담 운전기사 신규 확보 필요",
-        "「여객자동차 운수사업법」 제81조는 운행 경비 수령도 자가용 유상운송으로 보아 금지",
-        "예외는 평일 출퇴근 카풀과 재난 등 허가 사유에 한정, 이웃 간 실비 운송은 위법",
+        "우리나라는 이웃 간 「여객자동차 운수사업법」 제81조는 운행 경비 수령도 자가용 유상운송으로 보아 금지",
+        "예외는 평일 출퇴근 카풀과 재난 등 허가 사유 한정, 이웃 간 실비 운송은 위법",
+        "그러나 해외의 경우 주민간의 유상운송을 허용하여 교통 문제해결에 활용 중",
     ]),
     *block("분석 목적", [
-        "입법·정책 제안대회(2025) 제안 「등록제 기반 자가용 유상운송 허용 제도」의 핵심 가설을 공식 통계로 검증",
+        "일본·영국·미국에서 제도화된 등록제 기반 주민 자가용 유상운송의 국내 적용 가능성을 공식 통계와 실제 데이터로 검증",
         ("차량 자원 가설", "교통취약지역 내 활용 가능한 주민 차량 자원 존재"),
         ("비용효율 가설", "운송 건별 실비·수고보상 방식의 기존 대안 대비 공공지출 절감"),
     ]),
@@ -240,10 +240,10 @@ data_cell = save("data", [
         ("차량 자원", "국토교통부 자동차 등록, 행정안전부 주민등록 통계(2026. 8.)"),
         ("이동 격차", "한국교통연구원 교통접근성지표(2025)"),
         ("대안 비용", "곡성·완주·용인 결산·예산, 농식품부 실적, 국토부 DRT 가이드라인"),
-        ("주민차량 비용·제도", "투자평가지침, 유가, 최저임금, 보험 특약, 법령, 해외 정부 문서"),
+        ("주민차량 비용·제도", "투자평가지침, 유가, 최저임금, 보험 특약, 법령, 해외 문서"),
         ("공개", f"원자료 {len(MAN)}건의 URL·해시를 저장소 MANIFEST.csv로 공개"),
     ]),
-    table(["활용 데이터(명)", "제공기관(명)", "플랫폼(명)", "URL"], DATA_ROWS, [28, 15, 17, 40],
+    table(["활용 데이터", "제공기관", "플랫폼", "URL"], DATA_ROWS, [28, 15, 17, 40],
           size=TINY, sizes=[TINY, TINY, TINY, 6.3]),
 ])
 
@@ -283,9 +283,7 @@ ai = save("ai", [
     *block("검증 원칙과 주요 프롬프트", [
         "AI 제시 수치는 미사용, 모든 수치를 원자료에서 스크립트로 재계산하고 원문과 대조",
         "\"자동차등록과 주민등록 세대를 시군구로 결합해 인구감소지역의 인구당 자가용을 계산하라\"",
-        "\"결산서 쪽 번호와 금액을 원문에서 찾아 대조하고 못 찾으면 멈춰라\"",
-        "\"주민차량 1회 비용을 항목별로 나누고 택시형·DRT와의 손익분기를 구하라\"",
-    ]),
+    ], lo=2),  # 사용자 확정본(2026-10-11): 프롬프트 2개 삭제
 ])
 
 # ================================================================== 6. 분석 내용 및 결과
@@ -372,7 +370,7 @@ results = save("results", [
         f"감가상각 포함·수고보상 1.5배 조건에서도 동행 왕복은 {worst_oat_round * 100:.0f}% 이상 절감",
         f"곡성 면 평균 수요(연 {n(A3['myeon_trips'])}회)에 DRT 1대 투입 시 이용자 1명당 {won(drt_low_pax)}, 주민차량은 "
         f"{won_range(rt['public'] / pax, base['public'] / pax)}",
-        f"생활권 수요 연 {n(A3['q_star_drt_trips'])}회 미만이면 주민차량이 DRT 신규 투입보다 유리(그림 2)",
+        f"생활권 수요 연 {n(A3['q_star_drt_trips'])}회 미만 시 주민차량이 DRT 신규 투입보다 유리(그림 2)",
     ]),
 
     *block("곡성군 적용 결과", [
@@ -468,7 +466,6 @@ refs = [
     "中国運輸局(2024). 自家用有償旅客運送者が利用者から収受する対価の取扱いについて.",
     "HMRC(2026). Employment Income Manual EIM71155; Public Passenger Vehicles Act 1981 s.1; Community Transport Association(2024). Mapping England.",
     "IRS(2025). IR-2025-128; Minnesota DOT(2019). 2018 report on Minnesota Council on Transportation Access.",
-    "김대운 외(2025). 도서산간 교통복지 사각지대 해소를 위한 등록제 기반 자가용 유상운송 허용 제도. 2025년 입법 및 정책 제안대회 제안서.",
 ]
 tools = save("refs", [
     p("<b>분석도구</b>: Python 3.11(pandas, pdfplumber, PyMuPDF, matplotlib), 한컴오피스(pyhwpx), Anthropic Claude Code", size=8),
@@ -499,7 +496,7 @@ def strip(parts):
     return html.unescape(re.sub(r"\n+", "\n", t)).strip()
 
 
-md = [f"## 주제\n\n{plain['title']}\n{plain['subtitle']}\n"]
+md = [f"## 주제\n\n{plain['title']}\n" + (f"{plain['subtitle']}\n" if plain['subtitle'] else "")]
 for ttl, parts in [("분석 배경 및 목적", bg), ("활용 데이터", data_cell), ("분석과정 및 방법", method), ("AI 기술 활용", ai),
                    ("분석 내용 및 결과", results), ("정책제안 및 기대효과", policy), ("분석도구 및 참고문헌", tools),
                    ("분석결과 이미지", image)]:
